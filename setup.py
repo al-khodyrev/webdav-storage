@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(
-    name = "webdav-storage-nginx",
+    name = "webdav-storage",
     version = "0.0.1",
     packages = find_packages(),
     author = "StimuL",
