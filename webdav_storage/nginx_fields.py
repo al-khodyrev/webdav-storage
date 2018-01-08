@@ -29,7 +29,7 @@ class NginxImageFileBase(NginxFileBase):
 
     def host(self):
         if not self.hosts or not self.name:
-            return settings.NGINX_IMAGES_PREFIX
+            return getattr(settings, 'NGINX_PREFIX', '')
         return domain4url(self.name, shift=4)
 
     def resize_url(self, size):
