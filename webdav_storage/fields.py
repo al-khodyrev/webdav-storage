@@ -41,14 +41,14 @@ except ImportError:
 class WebDAVMixin():
     def __init__(self, verbose_name=None, name=None, upload_to='', storage=default_webdav_storage,
                  custom_magic_file=None, **kwargs):
-        self.random_filename = kwargs.pop('random_filename', False)
+        self.random_filename = kwargs.pop('random_filename', True)
 
         if self.random_filename:
             if magic is None or uuid is None or mimetypes is None:
                 raise ImproperlyConfigured(
                     'You need to install magic, mimetypes and uuid module to use random_filename')
             self.custom_magic_file = custom_magic_file
-            self.valid_content_types = getattr(settings, 'WEBDAV_VALID_CONTENT_TYPES') or VALID_CONTENT_TYPES
+            self.valid_content_types = getattr(settings, 'WEBDAV_VALID_CONTENT_TYPES', None) or VALID_CONTENT_TYPES
             if kwargs.get('valid_content_types'):
                 self.valid_content_types = kwargs['valid_content_types']
 

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.core.files.storage import default_storage
 from django.forms import forms
 from django.template.defaultfilters import filesizeformat
 
@@ -98,7 +97,7 @@ class CustomNginxImageField(NginxImageField):
     """
 
     def __init__(self, *args, **kwargs):
-        self.content_types = kwargs.pop('content_types', [])
+        self.content_types = kwargs.pop('content_types', ['image/jpg', 'image/jpeg', 'image/png'])
         self.max_upload_size = kwargs.pop('max_upload_size', 5242880)  # 5MB
         super(CustomNginxImageField, self).__init__(*args, **kwargs)
 
@@ -139,25 +138,24 @@ class CustomFileField(WebDAVFileField):
     attr_class = NginxFile
 
     def __init__(self, verbose_name=None, name=None, upload_to='', **kwargs):
-        if 'storage' not in kwargs:
-            kwargs['storage'] = default_storage
-        if 'validators' not in kwargs:
-            kwargs['validators'] = []
-
-        self.max_upload_size = kwargs.pop('max_upload_size', None)
+        self.max_upload_size = kwargs.pop('max_upload_size', 5242880)
         super(CustomFileField, self).__init__(verbose_name, name, upload_to, **kwargs)
 
     def clean(self, *args, **kwargs):
         data = super(CustomFileField, self).clean(*args, **kwargs)
-        max_upload_size = self.max_upload_size or 52428800
 
         file = data.file
         try:
-            if file._size > max_upload_size:
+            if file._size > self.max_upload_size:
                 raise forms.ValidationError(
                     'Превышен максимальный размер файла {}. Ваш файл - {}'.format(
-                        filesizeformat(max_upload_size),
+                        filesizeformat(self.max_upload_size),
                         filesizeformat(file._size)))
         except AttributeError:
             pass
         return data
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(CustomFileField, self).deconstruct()
+        kwargs.pop('max_upload_size', None)
+        return name, path, args, kwargs
