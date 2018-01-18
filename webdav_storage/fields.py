@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-from io import StringIO
+from io import BytesIO
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -96,7 +96,7 @@ class WebDAVFile(File):
         self._storage = storage
         self._mode = mode
         self._is_dirty = False
-        self.file = StringIO()
+        self.file = BytesIO()
         self._is_read = False
 
     @property
@@ -119,7 +119,7 @@ class WebDAVFile(File):
     def write(self, content):
         if 'w' not in self._mode:
             raise AttributeError('File was opened for read-only access.')
-        self.file = StringIO(content)
+        self.file = BytesIO(content)
         self._is_dirty = True
         self._is_read = True
 

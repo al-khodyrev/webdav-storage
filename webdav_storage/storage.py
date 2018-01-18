@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from http.client import HTTPConnection
-from io import StringIO
+from io import BytesIO
 from urllib.error import HTTPError
 from urllib.parse import quote, urlparse
 
@@ -65,7 +65,7 @@ class WebDAVStorage(Storage):
         res = conn.getresponse()
         if res.status != 200:
             raise ValueError(res.reason)
-        temp_file = StringIO()
+        temp_file = BytesIO()
         while True:
             chunk = res.read(32768)
             if chunk:
