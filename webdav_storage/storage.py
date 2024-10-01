@@ -5,7 +5,7 @@ from urllib.error import HTTPError
 from urllib.parse import quote, urlparse
 
 from django.conf import settings
-from django.core.files.storage import Storage, get_storage_class
+from django.core.files.storage import Storage, storages
 from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_bytes
 from django.utils.functional import LazyObject
@@ -103,8 +103,10 @@ class WebDAVStorage(Storage):
 
 class DefaultWebDAVStorage(LazyObject):
     def _setup(self):
-        storage_class = getattr(settings, 'WEBDAV_STORAGE_CLASS', 'webdav_storage.storage.WebDAVStorage')
-        self._wrapped = get_storage_class(storage_class)()
+        try:
+            self._wrapped = storages['webdav']
+        except KeyError:
+            self._wrapped = WebDAVStorage()
 
 
 default_webdav_storage = DefaultWebDAVStorage()
